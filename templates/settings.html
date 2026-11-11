@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Pengaturan - {{ site.app_title }}{% endblock %}
+{% block heading %}Pengaturan Aplikasi{% endblock %}
+{% block actions %}
+  <a class="btn btn-ghost" href="{{ url_for('change_password') }}">Ganti Password</a>
+{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="post" enctype="multipart/form-data" class="form-grid">
+    <label class="full">Judul Aplikasi
+      <input type="text" name="app_title" value="{{ site.app_title }}"
+             placeholder="Rekap Keuangan Al Husnayain" required>
+    </label>
+
+    <label>Nama Sekolah
+      <input type="text" name="school_name" value="{{ site.school_name }}"
+             placeholder="Al Husnayain">
+    </label>
+
+    <label>Kota/Keterangan Tanggal Cetak
+      <input type="text" name="report_location" value="{{ site.report_location }}"
+             placeholder="Contoh: Jakarta">
+    </label>
+
+    <label class="full">Alamat Sekolah
+      <textarea name="school_address" placeholder="Alamat lengkap sekolah">{{ site.school_address }}</textarea>
+    </label>
+
+    <label>Nama Kepala Sekolah
+      <input type="text" name="headmaster_name" value="{{ site.headmaster_name }}"
+             placeholder="Untuk tanda tangan laporan">
+    </label>
+
+    <label>Nama Bendahara
+      <input type="text" name="treasurer_name" value="{{ site.treasurer_name }}"
+             placeholder="Untuk tanda tangan laporan">
+    </label>
+
+    <div class="full logo-preview">
+      <img src="{{ url_for('logo') }}" alt="Logo saat ini">
+      <div>
+        <div class="hint">Logo saat ini. Unggah gambar baru (PNG/JPG/WEBP/SVG/GIF, maks 1,5 MB).</div>
+        <input type="file" name="logo" accept="image/*" style="margin-top:8px">
+        {% if site.logo_data %}
+        <label class="checkbox" style="display:flex;margin-top:10px;font-weight:500;font-size:13px;flex-direction:row;align-items:center;gap:8px">
+          <input type="checkbox" name="remove_logo" value="1" style="width:auto"> Hapus logo, kembali ke logo bawaan
+        </label>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions full">
+      <button class="btn btn-primary" type="submit">Simpan Pengaturan</button>
+      <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Batal</a>
+    </div>
+  </form>
+</section>
+
+<section class="card form-card" style="margin-top:18px">
+  <div class="card-head"><h2>Cetak Laporan</h2></div>
+  <p class="muted">Gunakan tombol <b>Cetak</b> di halaman Laporan untuk membuka tampilan siap cetak
+    (kop sekolah, logo, rincian transaksi, dan kolom tanda tangan). Dari dialog cetak, pilih
+    <b>Simpan sebagai PDF</b> bila ingin menyimpan file.</p>
+  <a class="btn" href="{{ url_for('reports') }}">Buka Laporan</a>
+</section>
+{% endblock %}

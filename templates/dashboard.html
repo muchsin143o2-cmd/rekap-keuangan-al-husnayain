@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ site.app_title }}{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+{% block actions %}
+  <form method="get" class="inline-form">
+    <input type="month" name="period" value="{{ period }}" onchange="this.form.submit()">
+  </form>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card income">
+    <span class="stat-label">Pemasukan {{ period_label }}</span>
+    <span class="stat-value">{{ income|rupiah }}</span>
+  </div>
+  <div class="stat-card expense">
+    <span class="stat-label">Pengeluaran {{ period_label }}</span>
+    <span class="stat-value">{{ expense|rupiah }}</span>
+  </div>
+  <div class="stat-card balance">
+    <span class="stat-label">Saldo Bulan Ini</span>
+    <span class="stat-value">{{ (income - expense)|rupiah }}</span>
+  </div>
+  <div class="stat-card total">
+    <span class="stat-label">Saldo Keseluruhan</span>
+    <span class="stat-value">{{ balance|rupiah }}</span>
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head">
+      <h2>Tren 6 Bulan Terakhir</h2>
+      <div class="legend">
+        <span><i class="dot income"></i>Pemasukan</span>
+        <span><i class="dot expense"></i>Pengeluaran</span>
+      </div>
+    </div>
+    <div class="chart">
+      {% for item in chart %}
+      <div class="chart-col">
+        <div class="bars">
+          <div class="bar income" style="height: {{ item.income_pct }}%" title="Pemasukan {{ item.income|rupiah }}"></div>
+          <div class="bar expense" style="height: {{ item.expense_pct }}%" title="Pengeluaran {{ item.expense|rupiah }}"></div>
+        </div>
+        <span class="chart-label">{{ item.label.split(' ')[0][:3] }}<br>{{ item.period.split('-')[0] }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>SPP {{ period_label }}</h2>
+      <a class="link" href="{{ url_for('spp', period=period) }}">Kelola &rarr;</a>
+    </div>
+    <div class="spp-progress">
+      <div class="progress"><div class="progress-bar" style="width: {{ spp_pct }}%"></div></div>
+      <div class="spp-numbers">
+        <span>{{ spp_paid|rupiah }} terkumpul</span>
+        <span>dari {{ spp_total|rupiah }}</span>
+      </div>
+      <p class="muted">{{ spp_pct }}% target SPP bulan ini tercapai.</p>
+    </div>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Transaksi Terbaru</h2>
+    <a class="link" href="{{ url_for('transactions') }}">Lihat semua &rarr;</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th class="right">Jumlah</th></tr>
+      </thead>
+      <tbody>
+        {% for t in recent %}
+        <tr>
+          <td>{{ t.date|tanggal }}</td>
+          <td>{{ t.description or '-' }}</td>
+          <td><span class="badge">{{ t.category or 'Tanpa kategori' }}</span></td>
+          <td class="right {{ 'text-income' if t.type == 'income' else 'text-expense' }}">
+            {{ '+' if t.type == 'income' else '-' }}{{ t.amount|rupiah }}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="empty">Belum ada transaksi.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

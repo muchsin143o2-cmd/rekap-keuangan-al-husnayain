@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site.app_title }}{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('logo') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo-img" src="{{ url_for('logo') }}" alt="Logo {{ site.school_name }}">
+        <div>
+          <div class="brand-title">{{ site.app_title }}</div>
+          <div class="brand-sub">Sistem Informasi Keuangan</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('transactions') }}" class="{{ 'active' if request.endpoint in ['transactions','transaction_add','transaction_edit'] }}">Transaksi</a>
+        <a href="{{ url_for('students') }}" class="{{ 'active' if request.endpoint in ['students','student_add','student_edit'] }}">Data Siswa</a>
+        <a href="{{ url_for('spp') }}" class="{{ 'active' if request.endpoint == 'spp' }}">Pembayaran SPP</a>
+        <a href="{{ url_for('reports') }}" class="{{ 'active' if request.endpoint in ['reports','reports_export','reports_print'] }}">Laporan</a>
+        <a href="{{ url_for('categories') }}" class="{{ 'active' if request.endpoint == 'categories' }}">Kategori</a>
+        <a href="{{ url_for('settings') }}" class="{{ 'active' if request.endpoint == 'settings' }}">Pengaturan</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <span class="avatar">{{ (current_user or 'U')[0]|upper }}</span>
+          <span>{{ current_user }}</span>
+        </div>
+        <a class="logout" href="{{ url_for('change_password') }}">Ganti Password</a>
+        <a class="logout" href="{{ url_for('logout') }}">Keluar</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h1>{% block heading %}{% endblock %}</h1>
+        <div class="topbar-actions">{% block actions %}{% endblock %}</div>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flashes">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

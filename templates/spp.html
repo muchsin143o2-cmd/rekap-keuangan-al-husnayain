@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Pembayaran SPP - {{ site.app_title }}{% endblock %}
+{% block heading %}Pembayaran SPP{% endblock %}
+{% block actions %}
+  <form method="get" class="inline-form">
+    <select name="period" onchange="this.form.submit()">
+      {% for p in periods %}
+        <option value="{{ p }}" {{ 'selected' if p == period }}>{{ p }}</option>
+      {% endfor %}
+    </select>
+  </form>
+{% endblock %}
+
+{% block content %}
+<div class="stats-grid stats-3">
+  <div class="stat-card income">
+    <span class="stat-label">Terkumpul ({{ period_label }})</span>
+    <span class="stat-value">{{ total_paid|rupiah }}</span>
+  </div>
+  <div class="stat-card total">
+    <span class="stat-label">Target</span>
+    <span class="stat-value">{{ total_target|rupiah }}</span>
+  </div>
+  <div class="stat-card balance">
+    <span class="stat-label">Lunas</span>
+    <span class="stat-value">{{ paid_count }} / {{ active_count }} siswa</span>
+  </div>
+</div>
+
+<section class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>NIS</th><th>Nama</th><th>Kelas</th>
+          <th class="right">Tagihan</th><th>Status</th><th class="right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in rows %}
+        <tr>
+          <td>{{ s.nis }}</td>
+          <td>{{ s.name }}{% if not s.active %} <span class="badge">Nonaktif</span>{% endif %}</td>
+          <td>{{ s.class_name }}</td>
+          <td class="right">{{ s.spp_amount|rupiah }}</td>
+          <td>
+            {% if s.payment_id %}
+              <span class="badge income">Lunas</span>
+              <small class="muted">{{ s.paid_at|tanggal }} &middot; {{ s.method }}</small>
+            {% else %}
+              <span class="badge expense">Belum bayar</span>
+            {% endif %}
+          </td>
+          <td class="right">
+            {% if s.payment_id %}
+              <form method="post" action="{{ url_for('spp_delete', payment_id=s.payment_id) }}"
+                    onsubmit="return confirm('Batalkan pembayaran SPP ini?')">
+                <input type="hidden" name="period" value="{{ period }}">
+                <button class="btn btn-sm btn-danger" type="submit">Batalkan</button>
+              </form>
+            {% else %}
+              <form method="post" action="{{ url_for('spp_pay') }}" class="pay-form">
+                <input type="hidden" name="student_id" value="{{ s.id }}">
+                <input type="hidden" name="period" value="{{ period }}">
+                <input type="number" name="amount" value="{{ s.spp_amount }}" min="1" step="1000" required>
+                <select name="method">
+                  <option>Tunai</option>
+                  <option>Transfer</option>
+                  <option>QRIS</option>
+                </select>
+                <button class="btn btn-sm btn-primary" type="submit">Bayar</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">Belum ada data siswa.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

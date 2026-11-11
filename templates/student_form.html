@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Ubah' if student else 'Tambah' }} Siswa - {{ site.app_title }}{% endblock %}
+{% block heading %}{{ 'Ubah' if student else 'Tambah' }} Siswa{% endblock %}
+{% block actions %}
+  <a class="btn btn-ghost" href="{{ url_for('students') }}">&larr; Kembali</a>
+{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="post" class="form-grid">
+    <label>NIS
+      <input type="text" name="nis" required value="{{ student.nis if student else '' }}" placeholder="2024001">
+    </label>
+    <label>Nama Lengkap
+      <input type="text" name="name" required value="{{ student.name if student else '' }}" placeholder="Nama siswa">
+    </label>
+    <label>Kelas
+      <input type="text" name="class_name" required value="{{ student.class_name if student else '' }}" placeholder="VII-A">
+    </label>
+    <label>Nominal SPP / Bulan (Rp)
+      <input type="number" name="spp_amount" min="0" step="1000"
+             value="{{ student.spp_amount if student else '' }}" placeholder="150000">
+    </label>
+    <label class="checkbox full">
+      <input type="checkbox" name="active" {{ 'checked' if not student or student.active }}>
+      Siswa aktif
+    </label>
+    <div class="form-actions full">
+      <button class="btn btn-primary" type="submit">Simpan</button>
+      <a class="btn btn-ghost" href="{{ url_for('students') }}">Batal</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

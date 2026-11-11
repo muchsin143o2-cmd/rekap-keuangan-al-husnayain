@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Transaksi - {{ site.app_title }}{% endblock %}
+{% block heading %}Transaksi{% endblock %}
+{% block actions %}
+  <a class="btn btn-primary" href="{{ url_for('transaction_add') }}">+ Tambah Transaksi</a>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <form method="get" class="filter-bar">
+    <input type="month" name="period" value="{{ period }}">
+    <select name="type">
+      <option value="">Semua Jenis</option>
+      <option value="income" {{ 'selected' if type_ == 'income' }}>Pemasukan</option>
+      <option value="expense" {{ 'selected' if type_ == 'expense' }}>Pengeluaran</option>
+    </select>
+    <input type="text" name="q" value="{{ q }}" placeholder="Cari keterangan / kategori...">
+    <button class="btn" type="submit">Filter</button>
+    <a class="btn btn-ghost" href="{{ url_for('transactions') }}">Reset</a>
+  </form>
+
+  <div class="summary-row">
+    <span class="text-income">Pemasukan: <b>{{ total_income|rupiah }}</b></span>
+    <span class="text-expense">Pengeluaran: <b>{{ total_expense|rupiah }}</b></span>
+    <span>Selisih: <b>{{ (total_income - total_expense)|rupiah }}</b></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th><th>Jenis</th><th>Kategori</th><th>Keterangan</th>
+          <th class="right">Jumlah</th><th class="right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in rows %}
+        <tr>
+          <td>{{ t.date|tanggal }}</td>
+          <td>
+            {% if t.type == 'income' %}<span class="badge income">Pemasukan</span>
+            {% else %}<span class="badge expense">Pengeluaran</span>{% endif %}
+          </td>
+          <td>{{ t.category or 'Tanpa kategori' }}</td>
+          <td>{{ t.description or '-' }}</td>
+          <td class="right {{ 'text-income' if t.type == 'income' else 'text-expense' }}">
+            {{ '+' if t.type == 'income' else '-' }}{{ t.amount|rupiah }}
+          </td>
+          <td class="right actions-cell">
+            <a class="btn btn-sm" href="{{ url_for('transaction_edit', tx_id=t.id) }}">Ubah</a>
+            <form method="post" action="{{ url_for('transaction_delete', tx_id=t.id) }}"
+                  onsubmit="return confirm('Hapus transaksi ini?')">
+              <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">Tidak ada transaksi pada filter ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

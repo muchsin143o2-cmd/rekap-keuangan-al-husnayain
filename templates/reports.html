@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Laporan - {{ site.app_title }}{% endblock %}
+{% block heading %}Laporan Keuangan{% endblock %}
+{% block actions %}
+  <a class="btn btn-ghost" href="{{ url_for('reports_print', period=period) }}" target="_blank">Cetak</a>
+  <a class="btn btn-primary" href="{{ url_for('reports_export', period=period) }}">Export CSV</a>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <form method="get" class="filter-bar">
+    <label class="inline-label">Periode
+      <select name="period" onchange="this.form.submit()">
+        {% for p in periods %}
+          <option value="{{ p }}" {{ 'selected' if p == period }}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <span class="muted">Laporan bulan {{ period_label }}</span>
+  </form>
+
+  <div class="stats-grid stats-3">
+    <div class="stat-card income">
+      <span class="stat-label">Total Pemasukan</span>
+      <span class="stat-value">{{ income|rupiah }}</span>
+    </div>
+    <div class="stat-card expense">
+      <span class="stat-label">Total Pengeluaran</span>
+      <span class="stat-value">{{ expense|rupiah }}</span>
+    </div>
+    <div class="stat-card balance">
+      <span class="stat-label">Selisih (Surplus/Defisit)</span>
+      <span class="stat-value">{{ balance|rupiah }}</span>
+    </div>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Rincian Pemasukan</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kategori</th><th class="right">Transaksi</th><th class="right">Jumlah</th></tr></thead>
+        <tbody>
+          {% for r in income_rows %}
+          <tr>
+            <td>{{ r.category }}</td>
+            <td class="right">{{ r.jumlah }}</td>
+            <td class="right text-income">{{ r.total|rupiah }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="empty">Tidak ada pemasukan.</td></tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr><th colspan="2">Total</th><th class="right">{{ income|rupiah }}</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Rincian Pengeluaran</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Kategori</th><th class="right">Transaksi</th><th class="right">Jumlah</th></tr></thead>
+        <tbody>
+          {% for r in expense_rows %}
+          <tr>
+            <td>{{ r.category }}</td>
+            <td class="right">{{ r.jumlah }}</td>
+            <td class="right text-expense">{{ r.total|rupiah }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" class="empty">Tidak ada pengeluaran.</td></tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr><th colspan="2">Total</th><th class="right">{{ expense|rupiah }}</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>Ringkasan SPP</h2></div>
+  <p>Total pembayaran SPP yang tercatat pada periode {{ period_label }}:
+    <b class="text-income">{{ spp_paid|rupiah }}</b></p>
+  <p class="muted">Catatan: pembayaran SPP dicatat terpisah dari transaksi umum.
+    Tambahkan transaksi pemasukan kategori "SPP" jika ingin memasukkannya ke saldo kas.</p>
+</section>
+{% endblock %}

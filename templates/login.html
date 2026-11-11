@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk - {{ site.app_title }}</title>
+  <link rel="icon" href="{{ url_for('logo') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <div class="brand brand-center">
+      <img class="brand-logo-img brand-logo-lg" src="{{ url_for('logo') }}" alt="Logo {{ site.school_name }}">
+      <div>
+        <div class="brand-title">{{ site.app_title }}</div>
+        <div class="brand-sub">{{ site.school_name }}</div>
+      </div>
+    </div>
+    <h2>Masuk ke Aplikasi</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+      <label>Username
+        <input type="text" name="username" placeholder="admin" required autofocus>
+      </label>
+      <label>Password
+        <input type="password" name="password" placeholder="••••••••" required>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+    </form>
+  </div>
+</body>
+</html>

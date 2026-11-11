@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Ubah' if tx else 'Tambah' }} Transaksi - {{ site.app_title }}{% endblock %}
+{% block heading %}{{ 'Ubah' if tx else 'Tambah' }} Transaksi{% endblock %}
+{% block actions %}
+  <a class="btn btn-ghost" href="{{ url_for('transactions') }}">&larr; Kembali</a>
+{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="post" class="form-grid">
+    <label>Jenis Transaksi
+      <select name="type" id="type-select" required>
+        <option value="income" {{ 'selected' if tx and tx.type == 'income' }}>Pemasukan</option>
+        <option value="expense" {{ 'selected' if tx and tx.type == 'expense' }}>Pengeluaran</option>
+      </select>
+    </label>
+
+    <label>Tanggal
+      <input type="date" name="date" required value="{{ tx.date if tx else today }}">
+    </label>
+
+    <label>Kategori
+      <select name="category_id" id="category-select">
+        <option value="">-- Tanpa kategori --</option>
+        {% for c in categories %}
+          <option value="{{ c.id }}" data-type="{{ c.type }}"
+            {{ 'selected' if tx and tx.category_id == c.id }}>
+            {{ c.name }} ({{ 'Pemasukan' if c.type == 'income' else 'Pengeluaran' }})
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Jumlah (Rp)
+      <input type="number" name="amount" min="1" step="1" required
+             value="{{ tx.amount if tx else '' }}" placeholder="Contoh: 150000">
+    </label>
+
+    <label class="full">Keterangan
+      <input type="text" name="description" value="{{ tx.description if tx else '' }}"
+             placeholder="Contoh: Pembayaran SPP bulan Agustus">
+    </label>
+
+    <div class="form-actions full">
+      <button class="btn btn-primary" type="submit">Simpan</button>
+      <a class="btn btn-ghost" href="{{ url_for('transactions') }}">Batal</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
