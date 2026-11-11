@@ -75,6 +75,11 @@ def inject_globals():
     }
 
 
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}
+
+
 @app.route("/logo")
 def logo():
     site = settings_store.get_settings(conn=database.get_db())
