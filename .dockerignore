@@ -1,0 +1,10 @@
+.env
+.secret_key
+*.db
+backups/
+*.log
+__pycache__/
+.git/
+tunnel.url
+.server.pid
+.backup.pid
